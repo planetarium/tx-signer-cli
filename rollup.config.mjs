@@ -5,7 +5,7 @@ import typescript from '@rollup/plugin-typescript';
 export default {
   input: 'app.ts',
   output: {
-    dir: 'output',
+    dir: 'out',
     format: 'cjs',
     exports: 'named',
   },
