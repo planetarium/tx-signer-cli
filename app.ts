@@ -1,3 +1,4 @@
+import { keccak_256 } from "@noble/hashes/sha3";
 import { ArgumentParser, FileType } from "argparse";
 import { RawPrivateKey } from "@planetarium/account";
 import { encode, decode, isDictionary, BencodexDictionary } from "@planetarium/bencodex";
@@ -17,9 +18,12 @@ const signTx = async (privatekeyBytes: Uint8Array, txBytes: Uint8Array) => {
     console.log("The given tx doesn't seem to bencodex dictionary.");
     return;
   }
+
+  const addressDigest = keccak_256(publicKeyBytes.slice(1));
   
   tx = new BencodexDictionary(
     Array.from(tx.entries()).concat([
+      [Buffer.from([0x73]), addressDigest.slice(addressDigest.length - 20)],
       [Buffer.from([0x70]), publicKeyBytes],
     ])
   );
