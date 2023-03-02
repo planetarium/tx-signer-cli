@@ -1,0 +1,26 @@
+{
+  "name": "tx-signer-cli",
+  "version": "1.0.0",
+  "description": "Simple CLI application for signing Libplanet & bencodex encoded",
+  "main": "app.js",
+  "repository": "https://github.com/planetarium/tx-signer-cli",
+  "author": "Swen Mun <longfinfunnel@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "nexe": "^4.0.0-rc.2"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "@planetarium/account": "^0.51.0-dev.202322833327",
+    "@planetarium/bencodex": "^0.1.0",
+    "@planetarium/sign": "^0.0.12",
+    "@planetarium/tx": "^0.49.1",
+    "argparse": "^2.0.1",
+    "atob": "^2.1.2",
+    "cross-blob": "^3.0.2",
+    "node-blob": "^0.0.2",
+    "rollup": "^3.18.0"
+  }
+}
