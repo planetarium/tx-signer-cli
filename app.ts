@@ -1,17 +1,17 @@
-const { ArgumentParser, FileType } = require("argparse");
-const { RawPrivateKey } = require("@planetarium/account");
-const { encode, decode, isDictionary, BencodexDictionary } = require("@planetarium/bencodex");
+import { ArgumentParser, FileType } from "argparse";
+import { RawPrivateKey } from "@planetarium/account";
+import { encode, decode, isDictionary, BencodexDictionary } from "@planetarium/bencodex";
+import Blob from "cross-blob";
 
-// Polyfills for atob and Blob constructor used in bencodex
-const Blob = require('cross-blob');
 globalThis.atob = (str) => Buffer.from(str, 'base64').toString('binary');
 globalThis.Blob = Blob;
 
 const parser = new ArgumentParser({ description: 'Sign bencodex-encoded transaction' });
 
-const signTx = async (privatekey, txBytes) => {
-  const rawPrivateKey = RawPrivateKey.fromBytes(privatekey);
-  const publicKeyBytes = rawPrivateKey.publicKey.toRawBytes("uncompressed");
+const signTx = async (privatekeyBytes: Uint8Array, txBytes: Uint8Array) => {
+  const privateKey = RawPrivateKey.fromBytes(privatekeyBytes);
+  const publicKey = privateKey.publicKey;
+  const publicKeyBytes = publicKey.toRawBytes("uncompressed");
   let tx = decode(txBytes);
   if (!isDictionary(tx)) {
     console.log("The given tx doesn't seem to bencodex dictionary.");
@@ -19,11 +19,15 @@ const signTx = async (privatekey, txBytes) => {
   }
   
   tx = new BencodexDictionary(
-    Array.from(tx.entries()).concat([[Buffer.from([0x70]), publicKeyBytes]])
+    Array.from(tx.entries()).concat([
+      [Buffer.from([0x70]), publicKeyBytes],
+    ])
   );
-  const signature = await rawPrivateKey.sign(encode(tx));
+  const signature = await privateKey.sign(encode(tx));
   tx = new BencodexDictionary(
-    Array.from(tx.entries()).concat([[Buffer.from([0x53]), signature.toBytes()]])
+    Array.from(tx.entries()).concat([
+      [Buffer.from([0x53]), signature.toBytes()],
+    ])
   );
 
   console.log(Buffer.from(encode(tx)).toString("hex"));
@@ -54,8 +58,8 @@ if (args.tx === undefined && args.txfile === undefined) {
 } else if (!!args.tx && !!args.txfile) {
   console.error("Can't specify --tx and --txfile same time.");
 } else if (!!args.txfile) {
-  const chunks = [];
-  args.txfile.on('data', (chunk) => chunks.push(chunk))
+  const chunks: Array<Buffer> = [];
+  args.txfile.on('data', (chunk: Buffer) => chunks.push(chunk))
   args.txfile.on('end', () => {
     return signTx(Buffer.from(args.privatekey, "hex"), Buffer.concat(chunks));
   });  

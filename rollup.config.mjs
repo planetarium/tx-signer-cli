@@ -1,14 +1,13 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
 
 export default {
-  input: 'app.js',
+  input: 'app.ts',
   output: {
     dir: 'output',
     format: 'cjs',
-    globals: {
-      'atob': '',
-    },
+    exports: 'named',
   },
-  plugins: [nodeResolve({ preferBuiltins: true }), commonjs()],
+  plugins: [nodeResolve({ preferBuiltins: true }), commonjs(), typescript()],
 };
