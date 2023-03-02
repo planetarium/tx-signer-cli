@@ -15,8 +15,7 @@ const signTx = async (privatekeyBytes: Uint8Array, txBytes: Uint8Array) => {
   const publicKeyBytes = publicKey.toRawBytes("uncompressed");
   let tx = decode(txBytes);
   if (!isDictionary(tx)) {
-    console.log("The given tx doesn't seem to bencodex dictionary.");
-    return;
+    throw new Error("The given tx doesn't seem to bencodex dictionary.");
   }
 
   const addressDigest = keccak_256(publicKeyBytes.slice(1));
